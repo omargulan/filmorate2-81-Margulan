@@ -9,4 +9,6 @@ public interface UserStorage {
     User update (User user);
     List<User> findAll();
     User findById(int id);
+    User addFriend(int userId, int friendId);
+    User deleteFriend(int userId, int friendId);
 }

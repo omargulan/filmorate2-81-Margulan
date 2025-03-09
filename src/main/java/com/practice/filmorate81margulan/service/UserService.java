@@ -6,16 +6,16 @@ import com.practice.filmorate81margulan.model.User;
 import com.practice.filmorate81margulan.storage.UserStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.*;
+import java.util.Collection;
+;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
-
-
+    //private final Set<Integer> friends = new HashSet<>();
     public List<User> getUsers(){
         return userStorage.findAll();
     }
@@ -42,7 +42,6 @@ public class UserService {
 
         return userStorage.create(user);
     }
-
 
     public User updateUser(User user){
         if(user.getEmail()==null || !user.getEmail().contains("@")){
@@ -72,7 +71,65 @@ public class UserService {
         return userStorage.update(user);
     }
 
+    public User findById(int id){
+        return  userStorage.findById(id);
+    }
+
     public void addFriend(int userId, int friendId){
+        User user = findById(userId);
+        User friend = findById(friendId);
+        if(userId==friendId){
+            throw new ValidationException("Нельзя добавить себя в друзья");
+        }
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
+        userStorage.update(user);
+        userStorage.update(friend);
+//        User existingUser = userStorage.findById(userId);
+//        if (userStorage.findById(userId) == null || userStorage.findById(friendId) == null){
+//            throw new NotFoundException("Пользователь не найден");
+//        }
+//        if (userStorage.findById(friendId) == userStorage.findById(userId)){
+//            throw new ValidationException("Сам себе добавить нельзя");
+//        }
+//        friends.add(friendId);
+//        existingUser.setFriends(friends);
+
 
     }
+    public void deleteFriend(int userId, int friendId){
+        User user = findById(userId);
+        User friend = findById(friendId);
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
+        userStorage.update(user);
+//        User existingUser = userStorage.findById(userId);
+//        if (userStorage.findById(userId) == null || userStorage.findById(friendId) == null){
+//            throw new NotFoundException("Пользователь не найден");
+//        }
+//        friends.remove(friendId);
+    }
+    public List<User> getFriends(int userId){
+        User user = findById(userId);
+        return user.getFriends().stream()
+                .map(this::findById)
+                .collect(Collection.toList());
+        if (existingUser == null){
+            throw  new NotFoundException("ne naiden");
+        }
+        return ;
+
+    }
+
+    public List<Integer> getFriendsOneUser(){
+
+    }
+
+    public List<Integer> getFriendsTwoUser(){
+
+    }
+
+
+
+
 }
